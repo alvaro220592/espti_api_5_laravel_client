@@ -4,19 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ProductController extends Controller
 {
     public function login(){
 
-        $client = new Guzzle;
-        $response = $client->request('POST', 'localhost:8000/api/v1/auth', [
-            'form_params' => [
-                'email' => env('API_EMAIL'),
-                'password' => env('API_SENHA')
-            ]
-        ]);
-
+        /* $client = new Guzzle;
+        try {
+            $response = $client->request('POST', 'localhost:8000/api/v1/auth', [
+                'form_params' => [
+                    'email' => env('API_EMAIL'),
+                    'password' => env('API_SENHA')
+                ]
+            ]);
+            dd($response->getBody());
+        } catch (GuzzleException $e) {
+            dd($e);
+        } */
     }
 
     /**
@@ -26,15 +31,18 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $client = new Guzzle;
-        $response = $client->request('POST', 'localhost:8000/api/v1/auth', [
-            'form_params' => [
-                'email' => env('API_EMAIL'),
-                'password' => env('API_SENHA')
-            ]
-        ]);
-
-        dd($response);
+        try {
+            $client = new Guzzle;
+            $response = $client->request('POST', env('API_URL').'auth', [
+                'form_params' => [
+                    'email' => env('API_EMAIL'),
+                    'password' => env('API_SENHA')
+                ]
+            ]);
+            dd(json_decode($response->getBody())->token);
+        } catch (GuzzleException $e) {
+            dd($e);
+        } 
     }
 
     /**
