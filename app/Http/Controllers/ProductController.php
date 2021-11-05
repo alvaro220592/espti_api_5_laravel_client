@@ -5,23 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Exception\GuzzleException;
+use App\Models\AuthApi;
 
 class ProductController extends Controller
 {
+    private $token;
+
+    public function __construct()
+    {
+        $auth = new AuthApi;
+        $this->token = $auth->getToken();
+    }
+
     public function login(){
 
-        /* $client = new Guzzle;
-        try {
-            $response = $client->request('POST', 'localhost:8000/api/v1/auth', [
-                'form_params' => [
-                    'email' => env('API_EMAIL'),
-                    'password' => env('API_SENHA')
-                ]
-            ]);
-            dd($response->getBody());
-        } catch (GuzzleException $e) {
-            dd($e);
-        } */
     }
 
     /**
@@ -31,18 +28,22 @@ class ProductController extends Controller
      */
     public function index()
     {
-        try {
-            $client = new Guzzle;
-            $response = $client->request('POST', env('API_URL').'auth', [
-                'form_params' => [
-                    'email' => env('API_EMAIL'),
-                    'password' => env('API_SENHA')
-                ]
-            ]);
-            dd(json_decode($response->getBody())->token);
-        } catch (GuzzleException $e) {
-            dd($e);
-        } 
+        /* $auth = new AuthApi;
+        $this->token = $auth->getToken(); */
+
+        $guzzle = new Guzzle;
+
+        $produtos = $guzzle->get(env('API_URL').'products', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->token
+            ]
+        ]);
+
+        $produtos = json_decode($produtos->getBody());
+
+        return view('testesApi.produtos.index', 
+            compact('produtos')
+        );
     }
 
     /**
