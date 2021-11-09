@@ -90,4 +90,21 @@ class ProductController extends Controller
     {
         //
     }
+
+    public function paginate($pagina)
+    {
+        $guzzle = new Guzzle;
+
+        $produtos = $guzzle->get(env('API_URL')."products?page={$pagina}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->token
+            ]
+        ]);
+
+        $produtos = json_decode($produtos->getBody());
+
+        return view('testesApi.produtos.index', 
+            compact('produtos')
+        );
+    }
 }
